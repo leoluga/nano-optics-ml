@@ -33,6 +33,8 @@ def load_materials():
     Sn_SiO2_cal_pd = 0.25*nf.farfieldfactor(f_SiO2,eps_SiO2)*nf.Sn_3(f_SiO2,eps_SiO2,z,a,t,n)
     Sn_SiO2_cal_fd = 0.25*nf.farfieldfactor(f_SiO2,eps_SiO2)*nf.Sn_2(f_SiO2,eps_SiO2,z,a,L,g,t,n)
     
+    nf.plotspectrum(f_SiO2, Sn_SiO2)
+
     STO = np.genfromtxt(r'C:\nano_optics_ml_data\raw\STO_eff.csv',delimiter=',')
     eps_STO = STO[:,0] + 1j*STO[:,1]
     Sn_STO = STO[:,2] + 1j*STO[:,3]
@@ -72,51 +74,49 @@ def load_materials():
     Sn_CaF2 = CaF2[:,2] + 1j*CaF2[:,3]
     Sn_CaF2_cal_pd = 0.25*nf.farfieldfactor(f_CaF2,eps_CaF2)*nf.Sn_3(f_CaF2,eps_CaF2,z,a,t,n)
     Sn_CaF2_cal_fd = 0.25*nf.farfieldfactor(f_CaF2,eps_CaF2)*nf.Sn_2(f_CaF2,eps_CaF2,z,a,L,g,t,n)
-    
+        
+    a=np.zeros((len(f_SiO2),7))
+    a[:,0] = f_SiO2
+    a[:,1] = np.real(Sn_SiO2_cal_fd)
+    a[:,2] = np.imag(Sn_SiO2_cal_fd)
+    a[:,3] = np.real(eps_SiO2)
+    a[:,4] = np.imag(eps_SiO2)
+    a[:,5] = np.real(Sn_SiO2)
+    a[:,6] = np.imag(Sn_SiO2)
+
+    a=np.zeros((len(f_STO),7))
+    a[:,0] = f_STO
+    a[:,1] = np.real(Sn_STO_cal_fd)
+    a[:,2] = np.imag(Sn_STO_cal_fd)
+    a[:,3] = np.real(eps_STO)
+    a[:,4] = np.imag(eps_STO)
+    a[:,5] = np.real(Sn_STO)
+    a[:,6] = np.imag(Sn_STO)
+
+    a=np.zeros((len(f_NGO),7))
+    a[:,0] = f_NGO
+    a[:,1] = np.real(Sn_NGO_cal_fd)
+    a[:,2] = np.imag(Sn_NGO_cal_fd)
+    a[:,3] = np.real(eps_NGO)
+    a[:,4] = np.imag(eps_NGO)
+    a[:,5] = np.real(Sn_NGO)
+    a[:,6] = np.imag(Sn_NGO)
+
+    a=np.zeros((len(f_CaF2),7))
+    a[:,0] = f_CaF2
+    a[:,1] = np.real(Sn_CaF2_cal_fd)
+    a[:,2] = np.imag(Sn_CaF2_cal_fd)
+    a[:,3] = np.real(eps_CaF2)
+    a[:,4] = np.imag(eps_CaF2)
+    a[:,5] = np.real(Sn_CaF2)
+    a[:,6] = np.imag(Sn_CaF2)
+
+    a=np.zeros((len(f_LSAT),7))
+    a[:,0] = f_LSAT
+    a[:,1] = np.real(Sn_LSAT_cal_fd)
+    a[:,2] = np.imag(Sn_LSAT_cal_fd)
+    a[:,3] = np.real(eps_LSAT)
+    a[:,4] = np.imag(eps_LSAT)
+    a[:,5] = np.real(Sn_LSAT)
+
 load_materials()
-
-
-a=np.zeros((len(f_SiO2),7))
-a[:,0] = f_SiO2
-a[:,1] = np.real(Sn_SiO2_cal_fd)
-a[:,2] = np.imag(Sn_SiO2_cal_fd)
-a[:,3] = np.real(eps_SiO2)
-a[:,4] = np.imag(eps_SiO2)
-a[:,5] = np.real(Sn_SiO2)
-a[:,6] = np.imag(Sn_SiO2)
-
-a=np.zeros((len(f_STO),7))
-a[:,0] = f_STO
-a[:,1] = np.real(Sn_STO_cal_fd)
-a[:,2] = np.imag(Sn_STO_cal_fd)
-a[:,3] = np.real(eps_STO)
-a[:,4] = np.imag(eps_STO)
-a[:,5] = np.real(Sn_STO)
-a[:,6] = np.imag(Sn_STO)
-
-a=np.zeros((len(f_NGO),7))
-a[:,0] = f_NGO
-a[:,1] = np.real(Sn_NGO_cal_fd)
-a[:,2] = np.imag(Sn_NGO_cal_fd)
-a[:,3] = np.real(eps_NGO)
-a[:,4] = np.imag(eps_NGO)
-a[:,5] = np.real(Sn_NGO)
-a[:,6] = np.imag(Sn_NGO)
-
-a=np.zeros((len(f_CaF2),7))
-a[:,0] = f_CaF2
-a[:,1] = np.real(Sn_CaF2_cal_fd)
-a[:,2] = np.imag(Sn_CaF2_cal_fd)
-a[:,3] = np.real(eps_CaF2)
-a[:,4] = np.imag(eps_CaF2)
-a[:,5] = np.real(Sn_CaF2)
-a[:,6] = np.imag(Sn_CaF2)
-
-a=np.zeros((len(f_LSAT),7))
-a[:,0] = f_LSAT
-a[:,1] = np.real(Sn_LSAT_cal_fd)
-a[:,2] = np.imag(Sn_LSAT_cal_fd)
-a[:,3] = np.real(eps_LSAT)
-a[:,4] = np.imag(eps_LSAT)
-a[:,5] = np.real(Sn_LSAT)
-a[:,6] = np.imag(Sn_LSAT)

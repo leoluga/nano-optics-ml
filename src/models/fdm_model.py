@@ -11,7 +11,7 @@ def calculate_integrand_for_scattered_field(
     incidence_angle=np.deg2rad(45),
     complex_factor=0.7 * (np.cos(0.06) + 1.0j * np.sin(0.06)),
     oscillation_amplitude=68e-9,
-    tip_radius=20e-9,
+    tip_radius=30e-9,
     tip_length=300e-9,
     angular_frequency=2 * np.pi * (250e3),
     initial_height=0.0
