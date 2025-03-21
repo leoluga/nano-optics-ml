@@ -13,3 +13,5 @@ This project focuses on applying machine learning methods to analyze data from S
    ```bash
    git clone https://github.com/your-username/nano-optics-ml.git
    cd nano-optics-ml
+
+   pip install -e .
