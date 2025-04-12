@@ -6,3 +6,4 @@ tensorflow
 torch
 pytest
 jupyter
+xgboost
