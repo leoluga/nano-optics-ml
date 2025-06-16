@@ -1,4 +1,7 @@
 src/nano_optics_ml.egg-info/
+src/saved_models/
+src/saved_scalers/
+src/saved_training_history/
 __pycache__/
 .json
 .pth
