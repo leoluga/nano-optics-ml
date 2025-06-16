@@ -83,13 +83,13 @@ if __name__ == "__main__":
     # Global settings.
     FILE_PATH = r'C:\nano_optics_ml_data\processed\article_main_data.csv'
     DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print(f"Using device: {DEVICE}")
     
     # Hyperparameter grid.
-    model_types = ["NN", "HNN"]
-    learning_rates = [1e-3, 5e-4]
-    batch_sizes = [8, 16, 32, 128]
-    epochs_list = [500, 2000, 5000]
+    # model_types = ["NN", "HNN"]
+    model_types = ["HNN"]
+    learning_rates = [1e-3, 1e-4]
+    batch_sizes = [8, 32, 256, 512]
+    epochs_list = [500, 5000, 7000]
     weight_decays = [1e-5, 1e-4, 1e-3]
     # Additional architecture parameters.
     hidden_sizes = [8, 16]
@@ -108,6 +108,9 @@ if __name__ == "__main__":
             
         for lr in learning_rates:
             for batch_size in batch_sizes:
+                if batch_size<=128:
+                    DEVICE='cpu'
+                    print(f"Using device: {DEVICE}")
                 for epochs in epochs_list:
                     for weight_decay in weight_decays:
                         for hidden_size in hidden_sizes:
