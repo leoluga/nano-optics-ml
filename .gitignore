@@ -1,2 +1,4 @@
 src/nano_optics_ml.egg-info/
 __pycache__/
+.json
+.pth
