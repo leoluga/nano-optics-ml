@@ -1,0 +1,37 @@
+# pyproject.toml
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nano-optics-ml"
+version = "0.1.0"
+description = "Machine learning models for analyzing nano-optics data."
+readme = "README.md"  # It's a good practice to have a README file
+requires-python = ">=3.8" # Specify the Python versions you support
+license = { text = "MIT" }
+authors = [
+    { name = "Leonardo Antonio Lugarini", email = "leonardo.lugarini@ga.ita.br" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "scikit-learn",
+    "torch",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "jupyter",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}

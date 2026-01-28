@@ -1,3 +1,5 @@
+#data_handler.py
+
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -49,6 +51,27 @@ def load_data(file_path, input_columns = ['beta1', 'beta2'], testsize = 0.2, rem
     )
 
 
+def get_raw_data_split(file_path, input_columns, testsize=0.2, remove_LSAT=True):
+    """
+    Loads and splits the data but does *not* scale it.
+    Returns the raw numpy arrays for X_test and y_test.
+    """
+    df = pd.read_csv(file_path)
+    if remove_LSAT:
+        df = df.loc[(df['material'] != 'LSAT')].reset_index(drop=True)
+    
+    df = process_df_eps_to_beta(df)
+
+    X = df[input_columns].values.astype(np.float32)
+    y = df[['Sn_exp_real', 'Sn_exp_imag']].values.astype(np.float32)
+    materials = df['material'].values
+
+    # The random_state=42 is critical for getting the same split as training
+    _, X_test_raw, _, y_test_raw, _, _ = train_test_split(
+        X, y, materials, test_size=testsize, random_state=42)
+    
+    return X_test_raw, y_test_raw
+
 def load_xgboost_data(file_path, input_columns=['beta1', 'beta2'], testsize=0.2,remove_LSAT=True):
     """Load and preprocess data for XGBoost"""
     df = pd.read_csv(file_path)
@@ -68,7 +91,6 @@ def load_xgboost_data(file_path, input_columns=['beta1', 'beta2'], testsize=0.2,
     y_train, y_test = scaler_y.fit_transform(y_train), scaler_y.transform(y_test)
 
     return X_train, X_test, y_train, y_test, scaler_X, scaler_y
-
 
 def get_dataloaders(X_train, y_train, X_test, y_test, batch_size):
     train_dataset = CustomDataset(X_train, y_train)

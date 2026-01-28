@@ -11,7 +11,8 @@ from datetime import datetime
 from data_preprocessing import load_data, get_dataloaders
 from models import NeuralNet, HybridNeuralNet
 from training import train_model, evaluate_model
-from utils.save_artifacts import save_model_and_history,save_scalers
+# from utils.save_artifacts import save_model_and_history,save_scalers
+from utils.save_artifacts import save_model_and_history, save_scalers, generate_experiment_prefix, check_if_experiment_exists
 
 def get_model(model_type, input_size, **kwargs):
     """
@@ -83,10 +84,13 @@ if __name__ == "__main__":
     # Global settings.
     FILE_PATH = r'C:\nano_optics_ml_data\processed\article_main_data.csv'
     DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-    
+
+    MODEL_DIR = os.path.join(os.getcwd(), "src", "saved_models")
+    RESULTS_FILE = os.path.join(os.getcwd(), "experiment_results.csv")
+
     # Hyperparameter grid.
     # model_types = ["NN", "HNN"]
-    model_types = ["HNN"]
+    model_types = ["NN","HNN"]
     learning_rates = [1e-3, 1e-4]
     batch_sizes = [8, 32, 256, 512]
     epochs_list = [500, 5000, 7000]
@@ -95,9 +99,10 @@ if __name__ == "__main__":
     hidden_sizes = [8, 16]
     num_hidden_layers_list = [3]
     
-    # To hold summary results
-    experiments = []
-    
+    print(f"--- Starting Grid Search ---")
+    print(f"Results will be saved to: {RESULTS_FILE}")
+    print(f"Models will be saved to: {MODEL_DIR}")
+
     # Loop over all combinations.
     for model_type in model_types:
         # For each model type, choose the right input columns.
@@ -108,13 +113,36 @@ if __name__ == "__main__":
             
         for lr in learning_rates:
             for batch_size in batch_sizes:
-                if batch_size<=128:
+                if batch_size<=1200:
                     DEVICE='cpu'
                     print(f"Using device: {DEVICE}")
                 for epochs in epochs_list:
                     for weight_decay in weight_decays:
                         for hidden_size in hidden_sizes:
                             for num_hidden_layers in num_hidden_layers_list:
+
+                                # 1. Collate all parameters for this run
+                                current_params = {
+                                    "model_type": model_type,
+                                    "learning_rate": lr,
+                                    "batch_size": batch_size,
+                                    "num_epochs": epochs,
+                                    "weight_decay": weight_decay,
+                                    "hidden_size": hidden_size,
+                                    "num_hidden_layers": num_hidden_layers
+                                }
+                                
+                                # 2. Generate the unique prefix for these parameters
+                                experiment_prefix = generate_experiment_prefix(**current_params)
+                                
+                                # 3. Check if a model with this prefix already exists
+                                if check_if_experiment_exists(experiment_prefix, MODEL_DIR):
+                                    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SKIPPING existing experiment: {experiment_prefix}")
+                                    continue # Skip to the next iteration
+                                
+                                print(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] RUNNING: {experiment_prefix}")
+                                print(f"Using device: {DEVICE}")
+
                                 additional_model_params = {
                                     "hidden_size": hidden_size,
                                     "num_hidden_layers": num_hidden_layers
@@ -141,10 +169,19 @@ if __name__ == "__main__":
                                     "num_hidden_layers": num_hidden_layers,
                                     "final_loss": final_loss
                                 }
-                                experiments.append(experiment_info)
+                                df_to_append = pd.DataFrame([experiment_info])
+                                
+                                # Check if file exists to determine if we need to write headers
+                                file_exists = os.path.exists(RESULTS_FILE)
+                                
+                                df_to_append.to_csv(
+                                    RESULTS_FILE, 
+                                    mode='a', #append
+                                    header=not file_exists, # Write header only if file does *not* exist
+                                    index=False
+                                )
+                                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Result saved for: {experiment_prefix}")
+                                
         
-    # Save all experiment results to a CSV for later analysis.
-    results_df = pd.DataFrame(experiments)
-    results_file = os.path.join(os.getcwd(), "experiment_results.csv")
-    results_df.to_csv(results_file, index=False)
-    print(f"Experiment summary results saved to: {results_file}")
+    print(f"\n--- Grid Search Finished ---")
+    print(f"All results saved to: {RESULTS_FILE}")

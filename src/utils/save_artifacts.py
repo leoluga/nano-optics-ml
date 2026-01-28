@@ -108,3 +108,31 @@ def save_scalers(scaler_X, scaler_y, model_params, scaler_dir):
         pickle.dump(scalers, f)
         
     print(f"Scalers saved to: {scalers_path}")
+
+def generate_experiment_prefix(model_type, learning_rate, batch_size, num_epochs, weight_decay, **kwargs):
+    """
+    Generates a unique filename *prefix* based on model parameters,
+    *without* the timestamp or extension.
+    """
+    prefix = f"{model_type}_lr{learning_rate}_bs{batch_size}_epochs{num_epochs}_wgtdecay{weight_decay}"
+    
+    # Append any additional keyword arguments (like hidden_size, etc.)
+    for key, value in kwargs.items():
+        prefix += f"_{key}{value}"
+    
+    return prefix
+
+def check_if_experiment_exists(prefix, directory):
+    """
+    Checks if any file in the given directory starts with the specified prefix.
+    """
+    # Ensure directory exists to avoid FileNotFoundError
+    if not os.path.exists(directory):
+        # If the directory doesn't exist, no experiments have been saved yet.
+        os.makedirs(directory, exist_ok=True)
+        return False
+        
+    for filename in os.listdir(directory):
+        if filename.startswith(prefix):
+            return True
+    return False
