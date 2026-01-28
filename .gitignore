@@ -5,3 +5,4 @@ src/saved_training_history/
 __pycache__/
 .json
 .pth
+.venv
