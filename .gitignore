@@ -6,3 +6,4 @@ __pycache__/
 .json
 .pth
 .venv
+data/
